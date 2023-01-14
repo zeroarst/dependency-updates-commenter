@@ -44,6 +44,12 @@ object AndroidX {
     @CommentUpdates
     val composeUI: String by lazy { "androidx.compose.ui:ui:1.2.0" }
 
+    // test lazy property.
+    @CommentUpdates
+    val composeMaterial: String by lazy {
+        "androidx.compose.material:material:1.1.1"
+    }
+
     // Some similar comments without annotation.
     // available versions:
     // 1.7.3
