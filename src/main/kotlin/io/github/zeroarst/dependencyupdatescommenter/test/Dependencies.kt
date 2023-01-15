@@ -65,7 +65,7 @@ object AndroidX {
     val composeMaterial3: String by lazy {
 
 
-        "androidx.compose.material:material3:1.1.1"
+        "androidx.compose.material3:material3:1.1.1"
 
 
     }
