@@ -16,10 +16,9 @@ object Commenter {
 
         var newFileContent = fileOriginalContent
 
-        val (resultText, _, indent, annotation, propertyDeclaration, _) = parsedDeclarationDetails
+        val (resultText, indent, annotation, propertyDeclaration, _) = parsedDeclarationDetails
 
         val newResultText = StringBuilder()
-            .append("\n")
 
         result
             .onSuccess { (_, updates) ->
@@ -29,6 +28,7 @@ object Commenter {
                         "$indent// ${it.version}\n"
                     })
             }
+            // any errors from resolve or fetches show them.
             .onFailure {
                 newResultText
                     .append("$indent// error:\n")
@@ -38,7 +38,7 @@ object Commenter {
         // append original annotation nd declaration
         newResultText
             .append("$indent$annotation\n")
-            .append("$indent$propertyDeclaration\n")
+            .append("$indent$propertyDeclaration")
 
         newFileContent = newFileContent.replace(resultText, newResultText.toString())
 
