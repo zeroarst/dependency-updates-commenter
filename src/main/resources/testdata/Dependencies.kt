@@ -7,7 +7,7 @@ object Junit {
 
     // test previous comments.
 
-    // available versions:
+    // Available versions:
     // 4.13
     // 4.13.1
     // 4.13.2
@@ -23,7 +23,7 @@ object JetBrains {
 object AndroidX {
 
     // test with commented out annotation
-    // available versions:
+    // Available versions:
     // 1.7.3
     // 1.7.2
     // 1.7.1
@@ -37,7 +37,7 @@ object AndroidX {
     @CommentUpdates
     val lifecycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
 
-    // error: invalid dependency.
+    // Error: invalid dependency.
     // continue error on second line.
     @CommentUpdates
     val lifecycleViewModelComposeInalid = "androidx.lifecycle-viewmodel-compose:2.4.1"
@@ -69,7 +69,7 @@ object AndroidX {
     }
 
     // Some similar comments without annotation.
-    // available versions:
+    // Available versions:
     // 1.7.3
     // 1.7.2
     // 1.7.1
