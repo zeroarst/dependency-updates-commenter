@@ -1,4 +1,4 @@
-import io.github.zeroarst.dependencyupdatescommenter.annotaions.CommentUpdates
+import testdata.CommentUpdates
 
 /**
  * Some docs.
