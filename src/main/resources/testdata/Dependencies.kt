@@ -15,6 +15,11 @@ object Junit {
     val junit = "junit:junit:4.12"
 }
 
+object KotlinX {
+    @CommentUpdates
+    val coroutTine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+}
+
 object JetBrains {
     @CommentUpdates // test some comments after annotation.
     val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.2"
@@ -22,7 +27,7 @@ object JetBrains {
 
 object AndroidX {
 
-    // test with commented out annotation
+    // test with commented out annotation and existing updates.
     // Available versions:
     // 1.7.3
     // 1.7.2
@@ -30,9 +35,19 @@ object AndroidX {
     // @CheckNewVersions
     const val coreKtx = "androidx.core:core-ktx:1.7.2"
 
-    // test with commented out annotation
-    // @CheckNewVersions
-    const val coreAnimation = "androidx.core:core-animation:1.7.2"
+    // nested dependencies
+    object Compose {
+
+        object Animation {
+            @CommentUpdates("androidx.compose.animation:animation-core")
+            const val version = "1.3.0"
+
+            // test with commented out annotation
+            // example of using other dependency variable.
+            // @CheckNewVersions
+            const val animation = "androidx.compose.animation:animation:${version}"
+        }
+    }
 
     @CommentUpdates
     val lifecycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
