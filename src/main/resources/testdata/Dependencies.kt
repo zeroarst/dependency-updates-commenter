@@ -12,17 +12,16 @@ object Junit {
     // 4.13.1
     // 4.13.2
     @CommentUpdates
-    val junit = "junit:junit:4.12"
+    const val junit = "junit:junit:4.12"
 }
 
 object KotlinX {
-    @CommentUpdates
-    val coroutTine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    const val coroutine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
 }
 
 object JetBrains {
     @CommentUpdates // test some comments after annotation.
-    val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.2"
+    const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.2"
 }
 
 object AndroidX {
@@ -35,7 +34,7 @@ object AndroidX {
     // @CheckNewVersions
     const val coreKtx = "androidx.core:core-ktx:1.7.2"
 
-    // nested dependencies
+    // test nested dependencies
     object Compose {
 
         object Animation {
@@ -50,18 +49,19 @@ object AndroidX {
     }
 
     @CommentUpdates
-    val lifecycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
+    const val lifecycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
 
     // Error: invalid dependency.
-    // continue error on second line.
+    // test continue error on second line.
     @CommentUpdates
-    val lifecycleViewModelComposeInalid = "androidx.lifecycle-viewmodel-compose:2.4.1"
+    const val lifecycleViewModelComposeInalid = "androidx.lifecycle-viewmodel-compose:2.4.1"
 
+    // test using val without const.
     @CommentUpdates
     val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel:2.4.1"
 
     @CommentUpdates
-    val composeCompiler = "androidx.compose.compiler:1.3.2" // "test some text with double quotes"
+    const val composeCompiler = "androidx.compose.compiler:1.3.2" // "test some text with double quotes"
 
     // test lazy property.
     @CommentUpdates
@@ -83,7 +83,7 @@ object AndroidX {
 
     }
 
-    // Some similar comments without annotation.
+    // test some similar comments without annotation.
     // Available versions:
     // 1.7.3
     // 1.7.2
