@@ -26,6 +26,18 @@ object JetBrains {
 
 object AndroidX {
 
+    // test with passing coordinate to annotation.
+    @CommentUpdates("androidx.activity:activity")
+    const val activityVersion = "1.6.1"
+    const val activity = "androidx.activity:activity:$activityVersion"
+    const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
+
+    // test with passing coordinate and parameter name to annotation.
+    @CommentUpdates(coordinate = "androidx.appcompat:appcompat")
+    const val appcompatVersion  = "1.6.1"
+    const val appcompat = "androidx.appcompat:appcompat:$appcompatVersion"
+    const val appcompatResources = "androidx.appcompat:appcompat-resources:$appcompatVersion"
+
     // test with commented out annotation and existing updates.
     // Available versions:
     // 1.7.3
