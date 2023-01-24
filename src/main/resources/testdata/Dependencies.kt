@@ -16,6 +16,7 @@ object Junit {
 }
 
 object KotlinX {
+    // test no annotation.
     const val coroutine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
 }
 
