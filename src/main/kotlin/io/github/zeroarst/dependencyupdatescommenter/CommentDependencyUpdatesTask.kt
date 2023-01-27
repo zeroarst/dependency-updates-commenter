@@ -2,8 +2,9 @@ package io.github.zeroarst.dependencyupdatescommenter
 
 import io.github.zeroarst.dependencyupdatescommenter.constants.Order
 import io.github.zeroarst.dependencyupdatescommenter.extensions.srcDirs
-import io.github.zeroarst.dependencyupdatescommenter.utils.*
-import kotlinx.coroutines.flow.*
+import io.github.zeroarst.dependencyupdatescommenter.executers.Conductor
+import io.github.zeroarst.dependencyupdatescommenter.executers.RegexConfig
+import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -11,12 +12,13 @@ import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
 import java.io.File
 
+
 abstract class CommentDependencyUpdatesTask : DefaultTask() {
 
     @get:Input
     @get:Option(
         option = "scanPath",
-        description = "Path to scan files, excluding forward at the beginning. Ex. src/main/kotlin."
+        description = """"Path to scan files. with/without "/" will work. Ex. "src/main/kotlin", "/src/main/kotlin", "/.", ".". Default to the source set folder."""
     )
     @get:Optional
     abstract val scanPath: Property<String>
@@ -40,96 +42,108 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     abstract val onlyReleaseVersion: Property<Boolean>
 
     @get:Input
-    @get:Option(option = "maximumVersionCount", description = "How many new version items to be added. Default is 5.")
+    @get:Option(
+        option = "maximumVersionCount",
+        description = "How many new version items to be added. Default is $EXT_DEFAULT_MAX_NEW_VERSION_COUNT."
+    )
     @get:Optional
     abstract val maximumVersionCount: Property<Int>
 
+    @get:Input
+    @get:Option(
+        option = "usingLatestVerComment",
+        description = "What to put in the comment if using the latest version."
+    )
+    @get:Optional
+    abstract val usingLatestVerComment: Property<String>
+
+    @get:Input
+    @get:Option(
+        option = "generateNewFile",
+        description = """Whether generate new file for the result with suffix "2". Ex. Dependencies.kt => Dependencies2.kt. Useful if you want to see the result instead of overwriting the content. """
+    )
+    @get:Optional
+    abstract val generateNewFile: Property<Boolean>
+
+    init {
+        // default property values
+        this.scanPath.convention("")
+        this.scanSubDirectories.convention(false)
+        this.order.convention(Order.LATEST_AT_BOTTOM)
+        this.onlyReleaseVersion.convention(false)
+        this.maximumVersionCount.convention(EXT_DEFAULT_MAX_NEW_VERSION_COUNT)
+        this.usingLatestVerComment.convention(EXT_DEFAULT_USING_LATEST_COMMENT)
+        this.generateNewFile.convention(false)
+    }
 
     @TaskAction
     fun execute() {
 
-        // store config values for later use.
-        config = config.copy(
-            scanPath = this.scanPath.orNull ?: config.scanPath,
-            scanSubDirectories = this.scanSubDirectories.orNull ?: config.scanSubDirectories,
-            order = this.order.orNull ?: config.order,
-            maximumVersionCount = this.maximumVersionCount.orNull ?: config.maximumVersionCount,
-            onlyReleaseVersion = this.onlyReleaseVersion.orNull ?: config.onlyReleaseVersion,
+        ducLogger.debug(
+            "properties: ${
+                mapOf(
+                    "scanPath" to this.scanPath.get(),
+                    "scanSubDirectories" to this.scanSubDirectories.get(),
+                    "order" to this.order.get(),
+                    "onlyReleaseVersion" to this.onlyReleaseVersion.get(),
+                    "maximumVersionCount" to this.maximumVersionCount.get(),
+                    "usingLatestVerComment" to this.usingLatestVerComment.get(),
+                    "generateNewFile" to this.generateNewFile.get(),
+                )
+            }"
         )
-
-        ducLogger.debug("config: $config")
+        ducLogger.debug(RegexConfig.constituted.toString())
 
         runBlocking {
-            scanFilesAndProcess(findSrcDir())
+            Conductor.scanFilesAndProcess(
+                findSrcDir(), Config(
+                    scanPath.get(),
+                    scanSubDirectories.get(),
+                    order.get(),
+                    onlyReleaseVersion.get(),
+                    maximumVersionCount.get(),
+                    usingLatestVerComment.get(),
+                    generateNewFile.get(),
+                )
+            )
         }
+
+        ducLogger.debug("task completed.")
     }
 
-    suspend fun scanFilesAndProcess(dir: File) {
-        ducLogger.debug("scanFilesAndProcess. dir: $dir")
-        if (!dir.isDirectory) {
-            ducLogger.debug("$dir is not a directory, skipping.")
-            return
-        }
-        dir.listFiles()
-            ?.asFlow()
-            ?.collect { file ->
-                if (dir.isDirectory && config.scanSubDirectories)
-                    scanFilesAndProcess(dir)
-                else if (file.extension == "kt") {
-                    ducLogger.debug("start to process. file: $file")
-                    val content = file.readText()
-
-                    val newContent = content
-                        .run(Parser::parse)
-                        .map {
-                            it to Resolver.resolve(it)
-                        }
-                        .asFlow()
-                        .map { pair ->
-                            val (parsedDeclarationDetails, resolvedDependencyDetailsResult) = pair
-                            CommentData(
-                                parsedContentDetails = parsedDeclarationDetails,
-                                result = resolvedDependencyDetailsResult
-                                    // return original throwable result or mapped result.
-                                    .mapCatching { resolvedDependencyDetails ->
-                                        resolvedDependencyDetails to Fetcher.fetch(resolvedDependencyDetails)
-                                            .getOrThrow()
-                                    }
-                            )
-                        }
-                        .fold(content, Commenter::comment)
-                    file.writeText(newContent)
-                }
-            }
-    }
 
     /**
      * Finds the first existing source directory.
      */
     private fun findSrcDir(): File {
-        val scanPathValue = config.scanPath
-        val potentialSrcDirList = if (!scanPathValue.isNullOrBlank()) {
-            require(!scanPathValue.startsWith("/")) { "Invalid scanPath=${scanPathValue}. Should not start with \"/\"." }
-            listOf(File("${project.layout.projectDirectory}/${scanPathValue}"))
-        } else project.srcDirs
+        val scanPathValue = this.scanPath.get().removePrefix("/")
+        val potentialSrcDirList = if (scanPathValue.isNotBlank()) {
+            listOf(File("${project.projectDir}/${scanPathValue}"))
+        } else
+            // exclude the one that is in buildDir, which we added when applying plugin.
+            project.srcDirs.filter { !it.path.contains(project.buildDir.path) }
 
         val existingSrcDir = potentialSrcDirList.let {
-            it.firstOrNull { file -> file.exists() }
-                ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
+            it.firstOrNull { file ->
+                file.exists()
+            } ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
         }
         ducLogger.debug("found existing source directory: $existingSrcDir")
         return existingSrcDir
     }
 
-    companion object {
-        var config: Config = Config()
-    }
-
     data class Config(
-        var scanPath: String? = null,
-        var scanSubDirectories: Boolean = false,
-        var order: Order = Order.LATEST_AT_BOTTOM,
-        var maximumVersionCount: Int = 10,
-        var onlyReleaseVersion: Boolean = false,
+        val scanPath: String,
+        val scanSubDirectories: Boolean,
+        val order: Order,
+        val onlyReleaseVersion: Boolean,
+        val maximumVersionCount: Int,
+        val usingLatestVerComment: String,
+        val generateNewFile: Boolean,
     )
+
+    companion object {
+        const val EXT_DEFAULT_USING_LATEST_COMMENT = "State of the art! You are using the latest version."
+        const val EXT_DEFAULT_MAX_NEW_VERSION_COUNT = 20
+    }
 }

@@ -1,8 +1,8 @@
 package io.github.zeroarst.dependencyupdatescommenter.repositories
 
-import io.github.zeroarst.dependencyupdatescommenter.utils.DependencyUpdate
-import io.github.zeroarst.dependencyupdatescommenter.utils.ResolvedDependencyDetails
-import io.github.zeroarst.dependencyupdatescommenter.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.executers.DependencyUpdate
+import io.github.zeroarst.dependencyupdatescommenter.executers.ResolvedDependencyDetails
+import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
 import org.json.XML
 import retrofit2.Converter
 import retrofit2.Response
@@ -13,6 +13,7 @@ import retrofit2.http.Url
 
 object GoogleRepository : Repository<GoogleRepository.GoogleMavenService>() {
 
+    override val name: String = "Google"
     override val url: String = "https://maven.google.com/"
     override val converterFactory: Converter.Factory = ScalarsConverterFactory.create()
 
@@ -30,7 +31,9 @@ object GoogleRepository : Repository<GoogleRepository.GoogleMavenService>() {
         resolvedDependencyDetails: ResolvedDependencyDetails
     ): List<DependencyUpdate> {
 
-        val (_, groupId, artifactId, version) = resolvedDependencyDetails
+        val groupId = resolvedDependencyDetails.groupId
+        val artifactId = resolvedDependencyDetails.artifactId
+        val version = resolvedDependencyDetails.version
 
         val groupIdToPath = groupId.replace(".", "/")
 

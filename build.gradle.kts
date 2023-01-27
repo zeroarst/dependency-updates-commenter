@@ -5,9 +5,8 @@ version = property("VERSION").toString()
 
 plugins {
     kotlin("jvm") version "1.7.21"
-    `maven-publish`// deploy to Maven local repository
+    `maven-publish` // deploy to Maven local repository
     `java-gradle-plugin`
-    // `kotlin-dsl` // shorthand for id("org.gradle.kotlin.kotlin-dsl")
     id("com.gradle.plugin-publish") version "1.0.0"
 }
 

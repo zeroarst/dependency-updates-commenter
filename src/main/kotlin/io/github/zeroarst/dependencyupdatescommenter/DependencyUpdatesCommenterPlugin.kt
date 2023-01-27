@@ -2,12 +2,13 @@ package io.github.zeroarst.dependencyupdatescommenter
 
 import io.github.zeroarst.dependencyupdatescommenter.extensions.main
 import io.github.zeroarst.dependencyupdatescommenter.extensions.sourceSets
+import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Files
 
-const val EXTENSION_NAME = "DependencyUpdatesCommenter"
+const val EXTENSION_NAME = "dependencyUpdatesCommenter"
 const val TASK_NAME = "commentDependencyUpdates"
 const val ANNOTATION_NAME = "CommentUpdates"
 
@@ -33,7 +34,12 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
         project.tasks.register(TASK_NAME, CommentDependencyUpdatesTask::class.java) { task ->
             try {
                 task.scanPath.set(extension.scanPath)
+                task.scanSubDirectories.set(extension.scanSubDirectories)
+                task.order.set(extension.order)
                 task.onlyReleaseVersion.set(extension.onlyReleaseVersion)
+                task.maximumVersionCount.set(extension.maximumVersionCount)
+                task.usingLatestVerComment.set(extension.usingLatestVerComment)
+                task.generateNewFile.set(extension.generateNewFile)
             } catch (e: Exception) {
                 ducLogger.error("register task \"${task.name}\" error", e)
             }
@@ -45,8 +51,8 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
      */
     private fun generateRequiredSources(project: Project) {
         val packageName = this::class.java.packageName
-        val buildDir = project.layout.buildDirectory.asFile.get()
-        val generatedSrcDir = File("$buildDir/generated/${packageName.substringAfterLast(".")}/main/kotlin")
+        val buildDir = project.buildDir
+        val generatedSrcDir = File("${project.buildDir}/generated/${packageName.substringAfterLast(".")}/main/kotlin")
 
         // add annotation.
         val annotationFile = File("${generatedSrcDir.path}/Annotation.kt")
@@ -56,14 +62,13 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
         }
         annotationFile.apply {
             writeText("package $packageName\n")
-            appendText("annotation class $ANNOTATION_NAME")
+            appendText("""annotation class $ANNOTATION_NAME(val coordinate: String = "")""")
         }
         addSrcDir(project, generatedSrcDir)
     }
 
     private fun addSrcDir(project: Project, srcDir: File) {
-        project.sourceSets.main.allJava
-            .srcDir(srcDir)
+        project.sourceSets.main.java.srcDir(srcDir)
     }
 
 }

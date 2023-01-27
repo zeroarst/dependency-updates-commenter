@@ -19,8 +19,3 @@ val Project.srcDirs: FileCollection
     get() {
         return sourceSets.main.allJava.sourceDirectories
     }
-
-val Project.existingSrcDir: File?
-    get() {
-        return srcDirs.firstOrNull { file -> file.exists() }
-    }

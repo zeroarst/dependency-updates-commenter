@@ -1,9 +1,9 @@
 package io.github.zeroarst.dependencyupdatescommenter.repositories
 
 import io.github.zeroarst.dependencyupdatescommenter.models.ComparableVersion
-import io.github.zeroarst.dependencyupdatescommenter.utils.DependencyUpdate
-import io.github.zeroarst.dependencyupdatescommenter.utils.ResolvedDependencyDetails
-import io.github.zeroarst.dependencyupdatescommenter.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.executers.DependencyUpdate
+import io.github.zeroarst.dependencyupdatescommenter.executers.ResolvedDependencyDetails
+import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
 import io.github.zeroarst.dependencyupdatescommenter.models.MavenCentralArtifactMetadata
 import retrofit2.Converter
 import retrofit2.Response
@@ -14,6 +14,7 @@ import retrofit2.http.Query
 object CentralMavenRepository : Repository<CentralMavenRepository.CentralMavenService>() {
 
     const val ROWS = 10
+    override val name: String = "CentralMaven"
     override val url: String = "https://search.maven.org/solrsearch/"
     override val converterFactory: Converter.Factory = MoshiConverterFactory.create()
 
@@ -41,7 +42,9 @@ object CentralMavenRepository : Repository<CentralMavenRepository.CentralMavenSe
         start: Int
     ): List<DependencyUpdate> {
 
-        val (_, groupId, artifactId, version) = resolvedDependencyDetails
+        val groupId = resolvedDependencyDetails.groupId
+        val artifactId = resolvedDependencyDetails.artifactId
+        val version = resolvedDependencyDetails.version
 
         val query = StringBuilder()
             .append("g:${groupId}")

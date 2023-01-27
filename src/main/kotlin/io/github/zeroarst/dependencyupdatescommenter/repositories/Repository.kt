@@ -1,13 +1,14 @@
 package io.github.zeroarst.dependencyupdatescommenter.repositories
 
-import io.github.zeroarst.dependencyupdatescommenter.utils.DependencyUpdate
-import io.github.zeroarst.dependencyupdatescommenter.utils.ResolvedDependencyDetails
+import io.github.zeroarst.dependencyupdatescommenter.executers.DependencyUpdate
+import io.github.zeroarst.dependencyupdatescommenter.executers.ResolvedDependencyDetails
 import retrofit2.Converter
 import retrofit2.Retrofit
 
 
 abstract class Repository<S> {
 
+    abstract val name: String
     abstract val url: String
     abstract val converterFactory: Converter.Factory
 
