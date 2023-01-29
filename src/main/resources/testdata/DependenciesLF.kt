@@ -98,7 +98,7 @@ object DependenciesLF {
 
         }
 
-        // test some similar comments without annotation.
+        // test some similar comments without annotation and declaration.
         // Available versions:
         // 1.7.3
         // 1.7.2
