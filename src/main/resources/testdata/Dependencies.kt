@@ -1,4 +1,4 @@
-import testdata.CommentUpdates
+package testdata
 
 /**
  * Some docs.
@@ -57,7 +57,7 @@ object AndroidX {
             // test with commented out annotation
             // example of using other dependency variable.
             // @CheckNewVersions
-            const val animation = "androidx.compose.animation:animation:${version}"
+            const val animation = "androidx.compose.animation:animation:$version"
         }
     }
 
