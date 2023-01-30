@@ -60,7 +60,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     @get:Input
     @get:Option(
         option = "generateNewFile",
-        description = """Whether generate new file for the result with suffix "2". Ex. Dependencies.kt => Dependencies2.kt. Useful if you want to see the result instead of overwriting the content. """
+        description = """Whether generate new file for the result with suffix "2". Ex. DependenciesCRLF.kt => DependenciesCRLF2.kt. Useful if you want to see the result instead of overwriting the content. """
     )
     @get:Optional
     abstract val generateNewFile: Property<Boolean>

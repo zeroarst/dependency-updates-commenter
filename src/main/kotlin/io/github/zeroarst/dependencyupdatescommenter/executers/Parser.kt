@@ -8,14 +8,16 @@ data class ParsedContentDetails(
     val indent: String,
     val annotation: String,
     val annotationCoordinate: String,
+    val lineBreak: String,
     val propertyDeclaration: String,
     val propertyValue: String,
 )
 
 object RegexConfig {
-    private val comment = """(.*// *(?:${Commenter.COMMENT_AVAILABLE_VERSION}|${Commenter.COMMENT_ERROR}.*)(?:\s*//.*)*\n)?""".toRegex()
-    private val annotation = """([\t ]*)(@$ANNOTATION_NAME(?:\((?:coordinate.*=.*)?"(.*)"\))?).*\n""".toRegex()
-    private val coordinate = """.*?((?:const.*)?val.*?(?:\n.*?)*"(.*?)".*)""".toRegex()
+    private val lineBreak = """\r?\n""".toRegex()
+    private val comment = """(.*// *(?:${Commenter.COMMENT_AVAILABLE_VERSION}|${Commenter.COMMENT_ERROR}.*)(?:\s*//.*)*$lineBreak)?""".toRegex()
+    private val annotation = """([\t ]*)(@$ANNOTATION_NAME(?:\((?:coordinate.*=.*)?"(.*)"\))?).*($lineBreak).*?""".toRegex()
+    private val coordinate = """((?:const.*)?val.*?(?:$lineBreak.*?)*"(.*?)").*""".toRegex()
     val constituted = "$comment$annotation$coordinate".toRegex()
 }
 
@@ -34,8 +36,9 @@ object Parser {
                 indent = matchResult.groupValues[2],
                 annotation = matchResult.groupValues[3],
                 annotationCoordinate = matchResult.groupValues[4],
-                propertyDeclaration = matchResult.groupValues[5],
-                propertyValue = matchResult.groupValues[6],
+                lineBreak = matchResult.groupValues[5],
+                propertyDeclaration = matchResult.groupValues[6],
+                propertyValue = matchResult.groupValues[7],
             )
         }.toList()
     }

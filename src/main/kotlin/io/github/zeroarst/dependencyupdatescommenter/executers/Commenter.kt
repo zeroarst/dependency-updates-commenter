@@ -21,6 +21,7 @@ object Commenter {
         val resultText = parsedDeclarationDetails.resultText
         val indent = parsedDeclarationDetails.indent
         val annotation = parsedDeclarationDetails.annotation
+        val lineBreak = parsedDeclarationDetails.lineBreak
         val propertyDeclaration = parsedDeclarationDetails.propertyDeclaration
 
         val newResultText = StringBuilder()
@@ -28,26 +29,26 @@ object Commenter {
         result
             .onSuccess { (_, updates) ->
                 newResultText
-                    .append("$indent// $COMMENT_AVAILABLE_VERSION\n")
+                    .append("$indent// $COMMENT_AVAILABLE_VERSION$lineBreak")
                     .apply {
                         if (updates.isEmpty())
-                            append("$indent// ${data.usingLatestVerComment}\n")
+                            append("$indent// ${data.usingLatestVerComment}$lineBreak")
                         else
                             append(updates.joinToString("") {
-                                "$indent// ${it.version}\n"
+                                "$indent// ${it.version}$lineBreak"
                             })
                     }
             }
             // any errors from resolve or fetches show them.
             .onFailure {
                 newResultText
-                    .append("$indent// $COMMENT_ERROR\n")
-                    .append("$indent// $it\n")
+                    .append("$indent// $COMMENT_ERROR$lineBreak")
+                    .append("$indent// $it$lineBreak")
             }
 
         // append original annotation nd declaration
         newResultText
-            .append("$indent$annotation\n")
+            .append("$indent$annotation$lineBreak")
             .append("$indent$propertyDeclaration")
 
         newFileContent = newFileContent.replace(resultText, newResultText.toString())

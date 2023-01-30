@@ -51,7 +51,6 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
      */
     private fun generateRequiredSources(project: Project) {
         val packageName = this::class.java.packageName
-        val buildDir = project.buildDir
         val generatedSrcDir = File("${project.buildDir}/generated/${packageName.substringAfterLast(".")}/main/kotlin")
 
         // add annotation.
