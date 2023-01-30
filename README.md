@@ -123,6 +123,8 @@ If you are using JetBrains IDEs, you can find the gradle task in Gradle panel. T
 
 Note if you apply the plugin to `buildSrc`, you might not able to see the task. [This link](https://discuss.gradle.org/t/is-it-possible-to-create-a-task-in-buildsrc/44753/2?u=zeroarst) says it is because Gradle does not deliver the `buildSrc` tasks to JetBrains IDEs. Please use command line instead: `./gradlew -p buildSrc cDU` or `./gradlew -p buildSrc commentDependencyUpdates`. [With the fix in Gradle 8.0](https://github.com/gradle/gradle/pull/22540), you might be able to run `./gradlew :buildSrc:cDU`.
 
+[Composite build](https://docs.gradle.org/current/userguide/composite_builds.html#composite_build_intro) works fine in this case.
+
 
 #### Via Command Line
 You could also run the task it via command line `./gradlew :module-if-have:cDU`
@@ -304,3 +306,5 @@ https://github.com/square/kotlinpoet
 Nevertheless, there might be something that I missed or don't know that actually work better than using Regular Expression. If you know any please let me know. 
 </p>
 
+# Report Issues
+If you come across any issue please report it with the log printed via command line: `./gradlew :module-if-have:cDU --debug | grep duc-log`. For `buildSrc` run `./gradlew -p buildSrc cDU --debug | grep duc-log`. 
