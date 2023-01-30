@@ -252,7 +252,7 @@ Ex.\
 `order = LATEST_AT_BOTTOM`\
 ![](https://i.imgur.com/rqZdrKi.png)\
 `order = LATEST_AT_TOP`\
-![](https://i.imgur.com/A7l2MW7.png)
+![](https://i.imgur.com/g8QC3zo.png)
 
 ### onlyReleaseVersion: Boolean
 
