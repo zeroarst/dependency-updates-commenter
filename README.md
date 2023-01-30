@@ -3,7 +3,7 @@
 This gradle plugin helps developers, who organise dependencies with Kotlin files in a central place such as `buildSrc`
 or `includeBuild`, to check if new updates are available and add them to comments along with the dependencies therefore
 they can easily upgrade without needing to search it in repositories. Simply just update your version by looking at the
-updates in comments. The goal is to keep whatever you've in your Kotlin files such as property declarations, formatting
+updates in comments. The goal is to keep whatever you have in your Kotlin files such as property declarations, formatting
 and comments, but just adding extra comments of updates.
 
 Furthermore, if you are using Android Studio and you have `Newer Library Versions Available` turned on, in your gradle
@@ -16,8 +16,8 @@ But if you declare dependencies variables in Kotlin files then you lose the abil
 This plugin helps to solve the problem.
 
 There are already some libraries there to address this problem, but some require you to migrate your code to use them.
-It is a hassle to revert those changes if you later decide to stop using them. Some require you to run command to see
-updates. For me, it is not intuitive. I want to see updates along with dependencies, I don't want to make change to my
+It is also a hassle to revert those changes if you later decide to stop using them. Some require you to run command to see
+updates. For me, it is not intuitive. I want to see updates along with dependencies, I don't want to make any changes to my
 declaration. What is why I made this plugin.
 
 This is the quick example:\
@@ -57,7 +57,7 @@ object Junit {
 * Line breaks are supported:
   * ✅CRLF  - Windows (\r\n)
   * ✅LF - macOS and Unix (\n)
-* Line break is supported:
+* Line break is not supported:
   * ❌CR - Classic Mac OS (\r) 
 * It only searches `search.maven.org` and `maven.google.com` repositories at the moment. If there are other repositories you want to support please let me know.
 * This is my first Gradle plugin so be gentle. I am still learning and welcome any feedback! 😊
@@ -66,7 +66,7 @@ object Junit {
 
 # Install
 
-Make sure you have gradlePluginPortal repository in `Setting.gradle` or `Setting.gradle.kts`.
+Make sure you have gradlePluginPortal repository in `setting.gradle` or `setting.gradle.kts`.
 
 ```kotlin
 pluginManagement {
@@ -252,7 +252,7 @@ Ex.\
 `order = LATEST_AT_BOTTOM`\
 ![](https://i.imgur.com/rqZdrKi.png)\
 `order = LATEST_AT_TOP`\
-![](https://i.imgur.com/XcENdrm.png)
+![](https://i.imgur.com/A7l2MW7.png)
 
 ### onlyReleaseVersion: Boolean
 
