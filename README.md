@@ -54,9 +54,12 @@ object Junit {
   query repositories for updates. Because of that, it is not 100% reliable. It relies on the format of the Kotlin files.
   You might ask why don't use KSP or AST parser? Please refer to [Verbosity](#Verbosity).
 
-* The plugin is only tested in Windows environment. I have not yet tested in macOS and Unix. If you find issues please
-  report it.
-* It only searches `search.maven.org` and `maven.google.com` repositories at the moment.
+* Line breaks are supported:
+  * ✅CRLF  - Windows (\r\n)
+  * ✅LF - macOS and Unix (\n)
+* Line break is supported:
+  * ❌CR - Classic Mac OS (\r) 
+* It only searches `search.maven.org` and `maven.google.com` repositories at the moment. If there are other repositories you want to support please let me know.
 * This is my first Gradle plugin so be gentle. I am still learning and welcome any feedback! 😊
 
 ---
@@ -73,9 +76,8 @@ pluginManagement {
 }
 ```
 
-Apply the plugin:\
+### Apply the plugin
 Kotlin DSL
-
 ```kotlin
 plugins {
     id("io.zeroarst.github.dependency-updates-commenter")
@@ -90,7 +92,7 @@ plugins {
 }
 ```
 
-Add annotation `@CommentUpdates` to properties in Kotlin files.
+### Add annotation `@CommentUpdates` to properties in Kotlin files.
 
 ```kotlin
 import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
@@ -100,11 +102,37 @@ object Junit {
     const val junit = "junit:junit:4.12"
 }
 ```
+If you have a group of dependencies that use the same version, for example, `androidx.activity:activity`
+and `androidx.activity:activity-ktx`. You can specify dependency coordinate along with annotation.
 
-Execute the gradle task `commentDependencyUpdates`.\
-![](https://i.imgur.com/pMw8deR.png)
+```kotlin
+import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
 
-Wait for the task completed. Then you get:
+object AndroidX {
+    @CommentUpdates(coordinate = "androidx.activity:activity")
+    const val activityVersion = "1.6.1"
+    const val activity = "androidx.activity:activity:$activityVersion"
+    const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
+}
+```
+
+### Execute the task
+#### Via IDE
+If you are using JetBrains IDEs, you can find the gradle task in Gradle panel. The task is `commentDependencyUpdates` under `dependenc update commenter`. Double click can execute it.\
+![](https://i.imgur.com/JN60A2C.png)
+
+Note if you apply the plugin to `buildSrc`, you might not able to see the task. [This link](https://discuss.gradle.org/t/is-it-possible-to-create-a-task-in-buildsrc/44753/2?u=zeroarst) says it is because Gradle does not deliver the `buildSrc` tasks to JetBrains IDEs. Please use command line instead: `./gradlew -p buildSrc cDU` or `./gradlew -p buildSrc commentDependencyUpdates`. [With the fix in Gradle 8.0](https://github.com/gradle/gradle/pull/22540), you might be able to run `./gradlew :buildSrc:cDU`.
+
+
+#### Via Command Line
+You could also run the task it via command line `./gradlew :module-if-have:cDU`
+or `./gradlew :module-if-have:commentDependencyUpdates` with [Options](#options). Note this only works on gradle version 7.6.
+
+Again, if apply this plugin to `buildSrc`, `./gradlew :buildSrc:cDU` will not work. Check the [explanation above](#via-ide).
+
+
+### Results
+Once executed, wait for the task completed, then you will get:
 
 ```kotlin
 import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
@@ -120,27 +148,6 @@ object Junit {
     const val junit = "junit:junit:4.12"
 }
 ```
-
-\
-You could also run the task it via command line `./gradlew :module-if-have:cDU`
-or `./gradlew :module-if-have:commentDependencyUpdates` with options. Note this only works on gradle version 7.6.
-
-If you have a group of dependencies that use the same version, for example, `androidx.activity:activity`
-and `androidx.activity:activity-ktx`. You can specify dependency coordinate along with annotation.
-
-```kotlin
-import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
-
-object AndroidX {
-    @CommentUpdates(coordinate = "androidx.activity:activity")
-    const val activityVersion = "1.6.1"
-    const val activity = "androidx.activity:activity:$activityVersion"
-    const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
-}
-```
-
-You get
-
 ```kotlin
 import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
 
@@ -162,7 +169,7 @@ object AndroidX {
 
 # Supported Format
 
-Currently only below property declaration is supported.
+Currently only below property declarations are supported.
 
 ```kotlin
 import io.github.zeroarst.dependencyupdatescommenter.CommentUpdates
@@ -217,7 +224,7 @@ dependencyUpdatesCommenter {
 }
 ```
 
-If you use command line. do  `./gradlew help --task :module-if-have:cDU` will show you all options. You can execute the
+If you use command line, run `./gradlew help --task :module-if-have:cDU` will show you all options. You can execute the
 task with options like
 this: `./gradlew task --help :module-if-have:cDU --maximumVersionCount=5 --onlyReleaseVersion=true`
 
