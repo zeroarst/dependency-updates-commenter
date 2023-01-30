@@ -4,7 +4,6 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import java.net.URL
 
-val ducLogger: Logger = Logging.getLogger("duc-log")
 
 fun getResource(path: String): URL? = object {}.javaClass.getResource(path)
 

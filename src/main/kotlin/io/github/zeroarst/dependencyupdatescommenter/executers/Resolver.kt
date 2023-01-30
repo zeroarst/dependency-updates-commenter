@@ -1,6 +1,6 @@
 package io.github.zeroarst.dependencyupdatescommenter.executers
 
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 
 data class ResolvedDependencyDetails(
     val parsedContentDetails: ParsedContentDetails,
@@ -12,6 +12,8 @@ data class ResolvedDependencyDetails(
 
 object Resolver {
 
+    private val logger = getDucLogger(this::class.java.simpleName)
+
     /**
      * Resolves the content details to group id, artifact id and version.
      */
@@ -21,7 +23,7 @@ object Resolver {
             parsedContentDetails.propertyValue
         }
 
-        ducLogger.debug("resolving dependency. coordinate: $coordinate")
+        logger.debug("resolving dependency. coordinate: $coordinate")
 
         if (coordinate.isBlank())
             return parsedContentDetails to Result.failure(Exception("coordinate is blank"))
@@ -34,17 +36,17 @@ object Resolver {
         val artifactId = matchResult.groupValues[2]
         val version = matchResult.groupValues[3]
 
-        ducLogger.debug("dependency resolved. groupId=$groupId, artifactId=$artifactId, version=$version")
-
-        return parsedContentDetails to Result.success(
-            ResolvedDependencyDetails(
-                parsedContentDetails,
-                coordinate,
-                groupId,
-                artifactId,
-                version
-            )
+        val resolvedDependencyDetails = ResolvedDependencyDetails(
+            parsedContentDetails,
+            coordinate,
+            groupId,
+            artifactId,
+            version
         )
+
+        logger.debug("dependency resolved. $resolvedDependencyDetails")
+
+        return parsedContentDetails to Result.success(resolvedDependencyDetails)
 
     }
 

@@ -3,8 +3,8 @@ package io.github.zeroarst.dependencyupdatescommenter.repositories
 import io.github.zeroarst.dependencyupdatescommenter.models.ComparableVersion
 import io.github.zeroarst.dependencyupdatescommenter.executers.DependencyUpdate
 import io.github.zeroarst.dependencyupdatescommenter.executers.ResolvedDependencyDetails
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
 import io.github.zeroarst.dependencyupdatescommenter.models.MavenCentralArtifactMetadata
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -31,6 +31,8 @@ object CentralMavenRepository : Repository<CentralMavenRepository.CentralMavenSe
     }
 
     override val serviceClass: Class<CentralMavenService> = CentralMavenService::class.java
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     override suspend fun fetchDependencyUpdates(resolvedDependencyDetails: ResolvedDependencyDetails): List<DependencyUpdate> {
         return fetchArtifactMetadataRecursively(resolvedDependencyDetails, mutableListOf(), 0)
@@ -84,7 +86,8 @@ object CentralMavenRepository : Repository<CentralMavenRepository.CentralMavenSe
         return if (newVersions.size == docs.size) {
             fetchArtifactMetadataRecursively(resolvedDependencyDetails, updates, start + ROWS)
         } else {
-            ducLogger.debug("Found new versions: ${updates.map { it.version }}")
+            // Long output. Turn it on when only need it.
+            // logger.debug("Found new versions: ${updates.map { it.version }}")
             updates
         }
 

@@ -2,7 +2,7 @@ package io.github.zeroarst.dependencyupdatescommenter
 
 import io.github.zeroarst.dependencyupdatescommenter.extensions.main
 import io.github.zeroarst.dependencyupdatescommenter.extensions.sourceSets
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -14,6 +14,8 @@ const val ANNOTATION_NAME = "CommentUpdates"
 
 
 class DependencyUpdatesCommenterPlugin : Plugin<Project> {
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     override fun apply(project: Project) {
         val extension = registerConfigurableExtension(project)
@@ -41,7 +43,7 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
                 task.usingLatestVerComment.set(extension.usingLatestVerComment)
                 task.generateNewFile.set(extension.generateNewFile)
             } catch (e: Exception) {
-                ducLogger.error("register task \"${task.name}\" error", e)
+                logger.error("register task \"${task.name}\" error", e)
             }
         }
     }

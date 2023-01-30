@@ -1,5 +1,7 @@
 package io.github.zeroarst.dependencyupdatescommenter.executers
 
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
+
 data class CommentData(
     val parsedContentDetails: ParsedContentDetails,
     val result: Result<Pair<ResolvedDependencyDetails, List<DependencyUpdate>>>,
@@ -7,6 +9,8 @@ data class CommentData(
 )
 
 object Commenter {
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     /**
      * Comments based on the result. Updates if successful, or error if failed.

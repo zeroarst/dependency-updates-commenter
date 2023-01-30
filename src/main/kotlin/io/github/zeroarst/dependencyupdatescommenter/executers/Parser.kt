@@ -1,6 +1,7 @@
 package io.github.zeroarst.dependencyupdatescommenter.executers
 
 import io.github.zeroarst.dependencyupdatescommenter.ANNOTATION_NAME
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 
 data class ParsedContentDetails(
     val resultText: String,
@@ -22,6 +23,8 @@ object RegexConfig {
 }
 
 object Parser {
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     /**
      * Parse a content via regular expression.

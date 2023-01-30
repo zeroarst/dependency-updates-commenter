@@ -2,7 +2,7 @@ package io.github.zeroarst.dependencyupdatescommenter.repositories
 
 import io.github.zeroarst.dependencyupdatescommenter.executers.DependencyUpdate
 import io.github.zeroarst.dependencyupdatescommenter.executers.ResolvedDependencyDetails
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import org.json.XML
 import retrofit2.Converter
 import retrofit2.Response
@@ -26,6 +26,8 @@ object GoogleRepository : Repository<GoogleRepository.GoogleMavenService>() {
     }
 
     override val serviceClass: Class<GoogleMavenService> = GoogleMavenService::class.java
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     override suspend fun fetchDependencyUpdates(
         resolvedDependencyDetails: ResolvedDependencyDetails
@@ -54,7 +56,8 @@ object GoogleRepository : Repository<GoogleRepository.GoogleMavenService>() {
 
         val rootJsonObj = XML.toJSONObject(xmlString)
         val jsonPrettyPrintString = rootJsonObj.toString(2)
-        ducLogger.debug(jsonPrettyPrintString)
+        // Long output. Turn it on when only need it.
+        // logger.debug(jsonPrettyPrintString)
 
         val groupJsonObj = kotlin.runCatching { rootJsonObj.getJSONObject(groupId) }.getOrNull()
             ?: error("cannot find get JSONObject with groupId $groupId")
@@ -66,7 +69,8 @@ object GoogleRepository : Repository<GoogleRepository.GoogleMavenService>() {
         if (versionsString.isNullOrBlank()) {
             error("cannot find get JSONObject with \"versions\" key")
         }
-        ducLogger.debug(versionsString)
+        // Long output. Turn it on when only need it.
+        // logger.debug(versionsString)
 
         return versionsString
             .split(",")

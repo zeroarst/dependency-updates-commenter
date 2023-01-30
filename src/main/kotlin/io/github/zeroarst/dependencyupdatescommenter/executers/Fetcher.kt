@@ -4,7 +4,7 @@ import io.github.zeroarst.dependencyupdatescommenter.models.ComparableVersion
 import io.github.zeroarst.dependencyupdatescommenter.constants.Order
 import io.github.zeroarst.dependencyupdatescommenter.repositories.CentralMavenRepository
 import io.github.zeroarst.dependencyupdatescommenter.repositories.GoogleRepository
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 
 data class DependencyUpdate(
     val version: String,
@@ -12,6 +12,8 @@ data class DependencyUpdate(
 )
 
 object Fetcher {
+
+    private val logger = getDucLogger(this::class.java.simpleName)
 
     private val repositories = listOf(
         CentralMavenRepository,
@@ -30,6 +32,7 @@ object Fetcher {
         repositories.forEach { repo ->
             kotlin
                 .runCatching {
+                    logger.debug("fetching updates from ${repo.url}. $resolvedDependencyDetails")
                     repo.fetchDependencyUpdates(resolvedDependencyDetails)
                 }
                 .onSuccess { dependencyUpdates ->
@@ -54,10 +57,10 @@ object Fetcher {
                     return Result.success(refinedUpdates)
                 }
                 .onFailure {
-                    ducLogger.debug("Unsuccessfully fetch updates from ${repo.url}", it)
+                    logger.debug("unsuccessfully fetch updates from ${repo.url}", it)
                 }
         }
-        return Result.failure(Exception("Unsuccessfully fetch dependency updates from repositories."))
+        return Result.failure(Exception("unsuccessfully fetch dependency updates from repositories."))
 
     }
 

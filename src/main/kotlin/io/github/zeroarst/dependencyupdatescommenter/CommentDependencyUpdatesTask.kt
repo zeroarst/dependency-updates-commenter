@@ -4,7 +4,7 @@ import io.github.zeroarst.dependencyupdatescommenter.constants.Order
 import io.github.zeroarst.dependencyupdatescommenter.extensions.srcDirs
 import io.github.zeroarst.dependencyupdatescommenter.executers.Conductor
 import io.github.zeroarst.dependencyupdatescommenter.executers.RegexConfig
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -65,6 +65,8 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     @get:Optional
     abstract val generateNewFile: Property<Boolean>
 
+    private val logger = getDucLogger(this::class.java.simpleName)
+
     init {
         this.group = "dependency updates commenter"
         // default property values
@@ -79,8 +81,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
 
     @TaskAction
     fun execute() {
-
-        ducLogger.debug(
+        logger.debug(
             "properties: ${
                 mapOf(
                     "scanPath" to this.scanPath.get(),
@@ -93,7 +94,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
                 )
             }"
         )
-        ducLogger.debug(RegexConfig.constituted.toString())
+        logger.debug(RegexConfig.constituted.toString())
 
         runBlocking {
             Conductor.scanFilesAndProcess(
@@ -109,7 +110,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
             )
         }
 
-        ducLogger.debug("task completed.")
+        logger.debug("task completed.")
     }
 
 
@@ -128,16 +129,17 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
         val candidateSrcDirList = if (scanPathValue.isNotBlank()) {
             listOf(File("${project.projectDir}/${scanPathValue}"))
         } else
-            // exclude the one that is in buildDir, which we added when applying plugin.
+        // exclude the one that is in buildDir, which we added when applying plugin.
             project.srcDirs.filter { !it.path.contains(project.buildDir.path) }
 
         // find first existing src dir from candidate src dirs.
         val existingSrcDir = candidateSrcDirList.let {
             it.firstOrNull { file ->
                 file.exists()
-            } ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
+            }
+                ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
         }
-        ducLogger.debug("found existing source directory: $existingSrcDir")
+        logger.debug("found existing source directory: $existingSrcDir")
         return existingSrcDir
     }
 

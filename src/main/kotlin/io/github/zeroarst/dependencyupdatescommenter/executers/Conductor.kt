@@ -1,7 +1,7 @@
 package io.github.zeroarst.dependencyupdatescommenter.executers
 
 import io.github.zeroarst.dependencyupdatescommenter.CommentDependencyUpdatesTask
-import io.github.zeroarst.dependencyupdatescommenter.utils.ducLogger
+import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.withContext
@@ -9,10 +9,12 @@ import java.io.File
 
 object Conductor {
 
+    private val logger = getDucLogger(this::class.java.simpleName)
+
     suspend fun scanFilesAndProcess(dir: File, config: CommentDependencyUpdatesTask.Config) {
-        ducLogger.debug("scanFilesAndProcess. dir: $dir")
+        logger.debug("scanFilesAndProcess. dir: $dir")
         if (!dir.isDirectory) {
-            ducLogger.debug("$dir is not a directory, skipping.")
+            logger.debug("$dir is not a directory, skipping.")
             return
         }
         dir.listFiles()
@@ -21,7 +23,7 @@ object Conductor {
                 if (file.isDirectory && config.scanSubDirectories)
                     scanFilesAndProcess(file, config)
                 else if (file.extension == "kt") {
-                    ducLogger.debug("start to process. file: $file")
+                    logger.debug("start to process file: $file")
                     val content = file.readText()
                     val newContent = processContentAndCommentUpdates(
                         content = content,
@@ -50,7 +52,12 @@ object Conductor {
     ): String? {
         return content
             .run(Parser::parse)
-            .let { it.ifEmpty { return null } } // no annotation found.
+            .let {
+                it.ifEmpty {
+                    logger.debug("no parsed result.")
+                    return null
+                }
+            } // no annotation found.
             .associate(Resolver::resolve)
             .map { (parsedContentDetails, resolvedDependencyDetailsResult) ->
                 // return original throwable result or mapped result.
