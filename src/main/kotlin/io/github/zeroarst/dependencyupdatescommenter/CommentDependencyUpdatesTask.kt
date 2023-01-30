@@ -117,8 +117,15 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
      * Finds the first existing source directory.
      */
     private fun findSrcDir(): File {
-        val scanPathValue = this.scanPath.get().removePrefix("/")
-        val potentialSrcDirList = if (scanPathValue.isNotBlank()) {
+
+        var scanPathValue = this.scanPath.get()
+        require(!File(scanPathValue).isAbsolute) { "You cannot specify absolute path: $scanPath" }
+
+        // trim "/" prefix.
+        scanPathValue = scanPathValue.removePrefix("/")
+
+        // find candidate src dirs.
+        val candidateSrcDirList = if (scanPathValue.isNotBlank()) {
             listOf(File("${project.projectDir}/${scanPathValue}"))
         } else
             // exclude the one that is in buildDir, which we added when applying plugin.
