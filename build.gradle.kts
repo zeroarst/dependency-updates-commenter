@@ -1,4 +1,3 @@
-import org.gradle.internal.impldep.com.google.api.services.storage.model.Bucket.Website
 
 group = property("GROUP").toString()
 version = property("VERSION").toString()
@@ -42,10 +41,17 @@ gradlePlugin {
 }
 
 
-// Configuration Block for the Plugin Marker artifact on Plugin Central
 pluginBundle {
     website = property("WEBSITE").toString()
     vcsUrl = property("VCS_URL").toString()
     description = property("DESCRIPTION").toString()
-    tags = listOf("plugin", "gradle", "dependency-updates", "new-versions")
+    tags = listOf(
+        "dependency-management",
+        "dependencies-management",
+        "dependency-manager",
+        "dependencies-manager",
+        "dependency-updates",
+        "new-versions",
+        "refresh-versions"
+    )
 }

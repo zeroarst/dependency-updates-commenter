@@ -5,7 +5,6 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
-import java.io.File
 
 val Project.sourceSets: SourceSetContainer
     get() = extensions

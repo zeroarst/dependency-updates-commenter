@@ -66,6 +66,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     abstract val generateNewFile: Property<Boolean>
 
     init {
+        this.group = "dependency updates commenter"
         // default property values
         this.scanPath.convention("")
         this.scanSubDirectories.convention(false)
@@ -123,7 +124,8 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
             // exclude the one that is in buildDir, which we added when applying plugin.
             project.srcDirs.filter { !it.path.contains(project.buildDir.path) }
 
-        val existingSrcDir = potentialSrcDirList.let {
+        // find first existing src dir from candidate src dirs.
+        val existingSrcDir = candidateSrcDirList.let {
             it.firstOrNull { file ->
                 file.exists()
             } ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
