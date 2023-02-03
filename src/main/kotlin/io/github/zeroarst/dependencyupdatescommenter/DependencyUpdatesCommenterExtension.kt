@@ -6,10 +6,11 @@ import javax.inject.Inject
 
 abstract class DependencyUpdatesCommenterExtension @Inject constructor(project: Project) {
     var scanPath: String? = null
-    var scanSubDirectories: Boolean = false
+    var scanSubDirectories: Boolean? = null
     var order: Order? = null
-    var onlyReleaseVersion: Boolean? = null
     var maximumVersionCount: Int? = null
     var usingLatestVerComment: String? = null
     var generateNewFile: Boolean? = null
+    var onlyReleaseVersion: Boolean? = null
+    var pickLatestGroupedByMajorAndMinor: Boolean? = null
 }

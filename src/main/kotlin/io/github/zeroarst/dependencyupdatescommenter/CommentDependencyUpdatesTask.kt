@@ -35,14 +35,6 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
 
     @get:Input
     @get:Option(
-        option = "onlyReleaseVersion",
-        description = "Ignore all updates that have qualifier. Ex. beta, alpha, RC...etc."
-    )
-    @get:Optional
-    abstract val onlyReleaseVersion: Property<Boolean>
-
-    @get:Input
-    @get:Option(
         option = "maximumVersionCount",
         description = "How many new version items to be added. Default is $EXT_DEFAULT_MAX_NEW_VERSION_COUNT."
     )
@@ -65,6 +57,23 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     @get:Optional
     abstract val generateNewFile: Property<Boolean>
 
+    @get:Input
+    @get:Option(
+        option = "pickLatestGroupedByMajorAndMinor",
+        description = """Group all versions by major and minor numbers then pick the latest one from each group. For example, if there are updates "1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1", "1.2.2", it will give "1.1.1", "1.2.2". true by default."""
+    )
+    @get:Optional
+    abstract val pickLatestGroupedByMajorAndMinor: Property<Boolean>
+
+    @get:Input
+    @get:Option(
+        option = "onlyReleaseVersion",
+        description = "Ignore all updates that have qualifier. Ex. beta, alpha, RC...etc."
+    )
+    @get:Optional
+    abstract val onlyReleaseVersion: Property<Boolean>
+
+
     private val logger = getDucLogger(this::class.java.simpleName)
 
     init {
@@ -73,10 +82,11 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
         this.scanPath.convention("")
         this.scanSubDirectories.convention(false)
         this.order.convention(Order.LATEST_AT_BOTTOM)
-        this.onlyReleaseVersion.convention(false)
         this.maximumVersionCount.convention(EXT_DEFAULT_MAX_NEW_VERSION_COUNT)
         this.usingLatestVerComment.convention(EXT_DEFAULT_USING_LATEST_COMMENT)
         this.generateNewFile.convention(false)
+        this.pickLatestGroupedByMajorAndMinor.convention(true)
+        this.onlyReleaseVersion.convention(false)
     }
 
     @TaskAction
@@ -98,15 +108,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
 
         runBlocking {
             Conductor.scanFilesAndProcess(
-                findSrcDir(), Config(
-                    scanPath.get(),
-                    scanSubDirectories.get(),
-                    order.get(),
-                    onlyReleaseVersion.get(),
-                    maximumVersionCount.get(),
-                    usingLatestVerComment.get(),
-                    generateNewFile.get(),
-                )
+                findSrcDir(), this@CommentDependencyUpdatesTask
             )
         }
 

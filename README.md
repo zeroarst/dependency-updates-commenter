@@ -80,7 +80,7 @@ pluginManagement {
 Kotlin DSL
 ```kotlin
 plugins {
-    id("io.zeroarst.github.dependency-updates-commenter")
+    id("io.zeroarst.github.dependency-updates-commenter") version "0.2.0"
 }
 ```
 
@@ -88,7 +88,7 @@ Groovy
 
 ```groovy
 plugins {
-    id 'io.zeroarst.github.dependency-updates-commenter'
+    id 'io.zeroarst.github.dependency-updates-commenter' version '0.2.0'
 }
 ```
 
@@ -254,13 +254,6 @@ Ex.\
 `order = LATEST_AT_TOP`\
 ![](https://i.imgur.com/g8QC3zo.png)
 
-### onlyReleaseVersion: Boolean
-
-default: false\
-Ignore all updates that have qualifier. Ex. beta, alpha, RC...etc.\
-Ex. `onlyReleaseVersion = true`\
-![](https://i.imgur.com/HMe3hi4.png)
-
 ### maximumVersionCount: Int
 
 default: 20\
@@ -284,6 +277,23 @@ the content.\
 Ex. `generateNewFile = true`\
 ![](https://i.imgur.com/HpnaEf1.png)
 
+### onlyReleaseVersion: Boolean
+
+default: false\
+Ignore all updates that have qualifier. Ex. beta, alpha, RC...etc.\
+Ex. `onlyReleaseVersion = true`\
+![](https://i.imgur.com/HMe3hi4.png)
+
+### pickLatestGroupedByMajorAndMinor: Boolean
+
+default: true\
+Group all versions by major and minor numbers then pick the latest one from each group. For example, if there are updates "1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1", "1.2.2", it will give "1.1.1", "1.2.2". This is turned on by default because in most cases you are like to use the latest major version instead of old ones, which might have bugs that have been fixed.
+Ex.\
+`pickLatestGroupedByMajorAndMinor = true`
+![](https://i.imgur.com/al1hh4q.png)
+
+`pickLatestGroupedByMajorAndMinor = false`
+![](https://i.imgur.com/dM4jP1a.png)
 ---
 
 # Verbosity
@@ -303,7 +313,7 @@ https://github.com/square/kotlinpoet
 </p>
 
 <p>
-Nevertheless, there might be something that I missed or don't know that actually work better than using Regular Expression. If you know any please let me know. 
+Nevertheless, there might be something that I missed or there are better ways to parse Kotlin files than using Regular Expression. If you know any please let me know. 
 </p>
 
 # Report Issues

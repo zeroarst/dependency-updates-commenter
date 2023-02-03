@@ -11,7 +11,7 @@ object Conductor {
 
     private val logger = getDucLogger(this::class.java.simpleName)
 
-    suspend fun scanFilesAndProcess(dir: File, config: CommentDependencyUpdatesTask.Config) {
+    suspend fun scanFilesAndProcess(dir: File, task: CommentDependencyUpdatesTask) {
         logger.debug("scanFilesAndProcess. dir: $dir")
         if (!dir.isDirectory) {
             logger.debug("$dir is not a directory, skipping.")
@@ -20,17 +20,17 @@ object Conductor {
         dir.listFiles()
             ?.asFlow()
             ?.collect { file ->
-                if (file.isDirectory && config.scanSubDirectories)
-                    scanFilesAndProcess(file, config)
+                if (file.isDirectory && task.scanSubDirectories.get())
+                    scanFilesAndProcess(file, task)
                 else if (file.extension == "kt") {
                     logger.debug("start to process file: $file")
                     val content = file.readText()
                     val newContent = processContentAndCommentUpdates(
                         content = content,
-                        config = config
+                        task = task
                     ) ?: return@collect
 
-                    if (config.generateNewFile) {
+                    if (task.generateNewFile.get()) {
                         val newFile = File("${file.parent}/${file.nameWithoutExtension}2.kt")
                         val successful = withContext(Dispatchers.IO) {
                             newFile.createNewFile()
@@ -48,33 +48,42 @@ object Conductor {
      */
     private suspend fun processContentAndCommentUpdates(
         content: String,
-        config: CommentDependencyUpdatesTask.Config
+        task: CommentDependencyUpdatesTask
     ): String? {
         return content
             .run(Parser::parse)
             .let {
+                // no annotation found.
                 it.ifEmpty {
                     logger.debug("no parsed result.")
                     return null
                 }
-            } // no annotation found.
+            }
             .associate(Resolver::resolve)
-            .map { (parsedContentDetails, resolvedDependencyDetailsResult) ->
+            .map { (parsedContentDetails, result) ->
                 // return original throwable result or mapped result.
-                parsedContentDetails to resolvedDependencyDetailsResult.mapCatching {
-                    it to Fetcher.fetch(
-                        resolvedDependencyDetails = it,
-                        onlyReleaseVersion = config.onlyReleaseVersion,
-                        maximumVersionCount = config.maximumVersionCount,
-                        order = config.order
+                parsedContentDetails to result.mapCatching {
+                    it to Fetcher.fetch(resolvedDependencyDetails = it).getOrThrow()
+                }
+            }
+            .map { (parsedContentDetails, result) ->
+                // return original throwable result or mapped result.
+                parsedContentDetails to result.mapCatching { (resolvedDependencyDetails, dependencyUpdates) ->
+                    resolvedDependencyDetails to Filter.filter(
+                        dependencyUpdates,
+                        onlyReleaseVersion = task.onlyReleaseVersion.get(),
+                        distinctByMajorAndMinorVersion = task.pickLatestGroupedByMajorAndMinor.get(),
+                        maximumVersionCount = task.maximumVersionCount.get(),
+                        order = task.order.get()
                     ).getOrThrow()
                 }
             }
+            // map the data to CommentData for Commenter.
             .map { (parsedContentDetails, resolvedDependencyDetailsResult) ->
                 CommentData(
                     parsedContentDetails = parsedContentDetails,
                     result = resolvedDependencyDetailsResult,
-                    usingLatestVerComment = config.usingLatestVerComment
+                    usingLatestVerComment = task.usingLatestVerComment.get()
                 )
             }
             .fold(content, Commenter::comment)

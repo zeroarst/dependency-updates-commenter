@@ -42,6 +42,7 @@ class DependencyUpdatesCommenterPlugin : Plugin<Project> {
                 task.maximumVersionCount.set(extension.maximumVersionCount)
                 task.usingLatestVerComment.set(extension.usingLatestVerComment)
                 task.generateNewFile.set(extension.generateNewFile)
+                task.pickLatestGroupedByMajorAndMinor.set(extension.pickLatestGroupedByMajorAndMinor)
             } catch (e: Exception) {
                 logger.error("register task \"${task.name}\" error", e)
             }

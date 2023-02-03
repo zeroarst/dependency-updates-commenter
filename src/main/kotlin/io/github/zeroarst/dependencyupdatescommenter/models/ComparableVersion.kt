@@ -96,8 +96,8 @@ class ComparableVersion(version: String) : Comparable<ComparableVersion> {
     /**
      * Represents a numeric item in the version item list that can be represented with an int.
      */
-    private class IntItem : Item {
-        private val value: Int
+    internal class IntItem : Item {
+        internal val value: Int
 
         override val type: Int = INT_ITEM
 

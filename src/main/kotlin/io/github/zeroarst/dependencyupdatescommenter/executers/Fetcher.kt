@@ -9,7 +9,9 @@ import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 data class DependencyUpdate(
     val version: String,
     val date: String? = null,
-)
+) {
+    val comparableVersion by lazy { ComparableVersion(version) }
+}
 
 object Fetcher {
 
@@ -25,9 +27,6 @@ object Fetcher {
      */
     suspend fun fetch(
         resolvedDependencyDetails: ResolvedDependencyDetails,
-        onlyReleaseVersion: Boolean,
-        maximumVersionCount: Int,
-        order: Order,
     ): Result<List<DependencyUpdate>> {
         repositories.forEach { repo ->
             kotlin
@@ -36,25 +35,7 @@ object Fetcher {
                     repo.fetchDependencyUpdates(resolvedDependencyDetails)
                 }
                 .onSuccess { dependencyUpdates ->
-                    val refinedUpdates = dependencyUpdates
-                        .run {
-                            if (onlyReleaseVersion)
-                                filter {
-                                    !ComparableVersion(it.version).hasQualifier
-                                }
-                            else this
-                        }
-                        .run {
-                            if (order == Order.LATEST_AT_TOP) {
-                                sortedByDescending { ComparableVersion(it.version) }
-                                    .take(maximumVersionCount)
-                            }
-                            else {
-                                sortedBy { ComparableVersion(it.version) }
-                                    .takeLast(maximumVersionCount)
-                            }
-                        }
-                    return Result.success(refinedUpdates)
+                    return Result.success(dependencyUpdates)
                 }
                 .onFailure {
                     logger.debug("unsuccessfully fetch updates from ${repo.url}", it)

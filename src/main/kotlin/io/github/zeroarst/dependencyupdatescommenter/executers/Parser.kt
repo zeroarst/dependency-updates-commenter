@@ -18,7 +18,7 @@ object RegexConfig {
     private val lineBreak = """\r?\n""".toRegex()
     private val comment = """(.*// *(?:${Commenter.COMMENT_AVAILABLE_VERSION}|${Commenter.COMMENT_ERROR}.*)(?:\s*//.*)*$lineBreak)?""".toRegex()
     private val annotation = """([\t ]*)(@$ANNOTATION_NAME(?:\((?:coordinate.*=.*)?"(.*)"\))?).*($lineBreak).*?""".toRegex()
-    private val coordinate = """((?:const.*)?val.*?(?:$lineBreak.*?)*"(.*?)").*""".toRegex()
+    private val coordinate = """((?:const.*)?val.*?(?:"(.*?)"|by lazy \{.*\r?\n?.*?"(.*?)"\r?\n?.*?}))""".toRegex()
     val constituted = "$comment$annotation$coordinate".toRegex()
 }
 
@@ -41,8 +41,9 @@ object Parser {
                 annotationCoordinate = matchResult.groupValues[4],
                 lineBreak = matchResult.groupValues[5],
                 propertyDeclaration = matchResult.groupValues[6],
-                propertyValue = matchResult.groupValues[7],
+                propertyValue = listOf(matchResult.groupValues[7], matchResult.groupValues[8]).first { it.isNotBlank() },
             )
+
         }.toList()
     }
 
