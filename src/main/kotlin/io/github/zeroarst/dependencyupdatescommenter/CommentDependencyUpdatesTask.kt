@@ -18,13 +18,13 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
     @get:Input
     @get:Option(
         option = "scanPath",
-        description = """"Path to scan files. with/without "/" will work. Ex. "src/main/kotlin", "/src/main/kotlin", "/.", ".". Default to the source set folder."""
+        description = """"Path to process. Can be a file or directory. With/without "/" will work. Ex. "src/main/kotlin", "/src/main/kotlin", "/.", ".". Default to the source set folder."""
     )
     @get:Optional
     abstract val scanPath: Property<String>
 
     @get:Input
-    @get:Option(option = "scanSubDirectories", description = "Whether to scan sub directories. Default is false.")
+    @get:Option(option = "scanSubDirectories", description = "Whether to scan sub directories if scanPath is a directory. Default is false.")
     @get:Optional
     abstract val scanSubDirectories: Property<Boolean>
 
@@ -117,7 +117,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
 
 
     /**
-     * Finds the first existing source directory.
+     * Finds the first existing source file/directory.
      */
     private fun findSrcDir(): File {
 
@@ -127,33 +127,20 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
         // trim "/" prefix.
         scanPathValue = scanPathValue.removePrefix("/")
 
-        // find candidate src dirs.
-        val candidateSrcDirList = if (scanPathValue.isNotBlank()) {
+        // find candidate sources.
+        val candidateSrcs = if (scanPathValue.isNotBlank()) {
             listOf(File("${project.projectDir}/${scanPathValue}"))
-        } else
-        // exclude the one that is in buildDir, which we added when applying plugin.
+        } else // exclude the one that is in buildDir, which we added when applying plugin.
             project.srcDirs.filter { !it.path.contains(project.buildDir.path) }
 
         // find first existing src dir from candidate src dirs.
-        val existingSrcDir = candidateSrcDirList.let {
-            it.firstOrNull { file ->
-                file.exists()
-            }
-                ?: error("Unable to find source directory. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
+        val existingSrc = candidateSrcs.let {
+            it.firstOrNull { file -> file.exists() }
+                ?: error("File/dir does not exist. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
         }
-        logger.debug("found existing source directory: $existingSrcDir")
-        return existingSrcDir
+        logger.debug("Found existing file/dir: $existingSrc")
+        return existingSrc
     }
-
-    data class Config(
-        val scanPath: String,
-        val scanSubDirectories: Boolean,
-        val order: Order,
-        val onlyReleaseVersion: Boolean,
-        val maximumVersionCount: Int,
-        val usingLatestVerComment: String,
-        val generateNewFile: Boolean,
-    )
 
     companion object {
         const val EXT_DEFAULT_USING_LATEST_COMMENT = "State of the art! You are using the latest version."

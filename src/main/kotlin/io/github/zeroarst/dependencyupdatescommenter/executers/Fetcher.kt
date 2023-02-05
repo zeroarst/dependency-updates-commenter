@@ -1,7 +1,6 @@
 package io.github.zeroarst.dependencyupdatescommenter.executers
 
 import io.github.zeroarst.dependencyupdatescommenter.models.ComparableVersion
-import io.github.zeroarst.dependencyupdatescommenter.constants.Order
 import io.github.zeroarst.dependencyupdatescommenter.repositories.CentralMavenRepository
 import io.github.zeroarst.dependencyupdatescommenter.repositories.GoogleRepository
 import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
@@ -31,7 +30,7 @@ object Fetcher {
         repositories.forEach { repo ->
             kotlin
                 .runCatching {
-                    logger.debug("fetching updates from ${repo.url}. $resolvedDependencyDetails")
+                    logger.debug("fetching updates from ${repo.url}. coordinate: ${resolvedDependencyDetails.coordinate}")
                     repo.fetchDependencyUpdates(resolvedDependencyDetails)
                 }
                 .onSuccess { dependencyUpdates ->

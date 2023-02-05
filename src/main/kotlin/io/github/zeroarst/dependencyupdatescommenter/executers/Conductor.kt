@@ -11,36 +11,42 @@ object Conductor {
 
     private val logger = getDucLogger(this::class.java.simpleName)
 
-    suspend fun scanFilesAndProcess(dir: File, task: CommentDependencyUpdatesTask) {
-        logger.debug("scanFilesAndProcess. dir: $dir")
-        if (!dir.isDirectory) {
-            logger.debug("$dir is not a directory, skipping.")
-            return
-        }
-        dir.listFiles()
-            ?.asFlow()
-            ?.collect { file ->
-                if (file.isDirectory && task.scanSubDirectories.get())
-                    scanFilesAndProcess(file, task)
-                else if (file.extension == "kt") {
-                    logger.debug("start to process file: $file")
-                    val content = file.readText()
-                    val newContent = processContentAndCommentUpdates(
-                        content = content,
-                        task = task
-                    ) ?: return@collect
-
-                    if (task.generateNewFile.get()) {
-                        val newFile = File("${file.parent}/${file.nameWithoutExtension}2.kt")
-                        val successful = withContext(Dispatchers.IO) {
-                            newFile.createNewFile()
-                        }
-                        if (successful)
-                            newFile.writeText(newContent)
-                    } else
-                        file.writeText(newContent)
+    suspend fun scanFilesAndProcess(fileOrDir: File, task: CommentDependencyUpdatesTask) {
+        logger.debug("scanFilesAndProcess. path: $fileOrDir")
+        if (!fileOrDir.isDirectory)
+            processFile(fileOrDir, task)
+        else
+            fileOrDir.listFiles()
+                ?.asFlow()
+                ?.collect { file ->
+                    processFile(file, task)
                 }
-            }
+    }
+
+    private suspend fun processFile(
+        file: File,
+        task: CommentDependencyUpdatesTask
+    ) {
+        if (file.isDirectory && task.scanSubDirectories.get())
+            scanFilesAndProcess(file, task)
+        else if (file.extension == "kt") {
+            logger.debug("start to process file: $file")
+            val content = file.readText()
+            val newContent = processContentAndCommentUpdates(
+                content = content,
+                task = task
+            ) ?: return
+
+            if (task.generateNewFile.get()) {
+                val newFile = File("${file.parent}/${file.nameWithoutExtension}2.kt")
+                val successful = withContext(Dispatchers.IO) {
+                    newFile.createNewFile()
+                }
+                if (successful)
+                    newFile.writeText(newContent)
+            } else
+                file.writeText(newContent)
+        }
     }
 
     /**

@@ -28,7 +28,7 @@ object Resolver {
         if (coordinate.isBlank())
             return parsedContentDetails to Result.failure(Exception("coordinate is blank"))
 
-        val matchResult = """(.+?)(?::(.*))?:(.+)""".toRegex().find(coordinate) ?: kotlin.run {
+        val matchResult = """([^:]+):([^:]+)(?::([^:]+))?""".toRegex().find(coordinate) ?: kotlin.run {
             return parsedContentDetails to Result.failure(Exception("unable to resolve dependency: $coordinate"))
         }
 
@@ -44,7 +44,7 @@ object Resolver {
             version
         )
 
-        logger.debug("dependency resolved. $resolvedDependencyDetails")
+        logger.debug("dependency resolved. groupId: ${resolvedDependencyDetails.groupId}, artifactId: ${resolvedDependencyDetails.artifactId}, version: ${resolvedDependencyDetails.version}")
 
         return parsedContentDetails to Result.success(resolvedDependencyDetails)
 

@@ -30,6 +30,7 @@ object Parser {
      * Parse a content via regular expression.
      */
     fun parse(content: String): List<ParsedContentDetails> {
+        logger.debug("parsing content")
         val regex = RegexConfig.constituted
         val matchResults = regex.findAll(content)
         return matchResults.map { matchResult ->
@@ -41,7 +42,7 @@ object Parser {
                 annotationCoordinate = matchResult.groupValues[4],
                 lineBreak = matchResult.groupValues[5],
                 propertyDeclaration = matchResult.groupValues[6],
-                propertyValue = listOf(matchResult.groupValues[7], matchResult.groupValues[8]).first { it.isNotBlank() },
+                propertyValue = listOf(matchResult.groupValues[7], matchResult.groupValues[8]).firstOrNull { it.isNotBlank() } ?: "",
             )
 
         }.toList()
