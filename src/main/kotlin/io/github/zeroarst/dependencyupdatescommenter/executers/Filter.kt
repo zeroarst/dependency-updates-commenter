@@ -27,21 +27,25 @@ object Filter {
                 else this
             }
             .run {
+                if (distinctByMajorAndMinorVersion)
+                    // make sure the latest one is at the top so after distinct the latest will be the
+                    // first.
+                    sortedByDescending { it.comparableVersion }
+                        .distinctBy { update ->
+                            update.comparableVersion.items?.mapNotNull { it as? ComparableVersion.IntItem }
+                                ?.let {
+                                    if (it.size >= 2) "${it.first().value}.${it[1].value}"
+                                    else it.first().value
+                                }
+
+                        }
+                else this
+            }
+            .run {
                 if (order == Order.LATEST_AT_TOP) sortedByDescending { it.comparableVersion }
                 else sortedBy { it.comparableVersion }
             }
-            .run {
-                if (distinctByMajorAndMinorVersion)
-                    distinctBy { update ->
-                        update.comparableVersion.items?.mapNotNull { it as? ComparableVersion.IntItem }
-                            ?.let {
-                                if (it.size >= 2) "${it.first().value}.${it[1].value}"
-                                else it.first().value
-                            }
 
-                    }
-                else this
-            }
             .run {
                 if (order == Order.LATEST_AT_TOP) take(maximumVersionCount)
                 else takeLast(maximumVersionCount)
