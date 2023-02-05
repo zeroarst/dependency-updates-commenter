@@ -81,7 +81,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
         // default property values
         this.scanPath.convention("")
         this.scanSubDirectories.convention(false)
-        this.order.convention(Order.LATEST_AT_BOTTOM)
+        this.order.convention(Order.LATEST_AT_TOP)
         this.maximumVersionCount.convention(EXT_DEFAULT_MAX_NEW_VERSION_COUNT)
         this.usingLatestVerComment.convention(EXT_DEFAULT_USING_LATEST_COMMENT)
         this.generateNewFile.convention(false)
