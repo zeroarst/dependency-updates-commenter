@@ -24,14 +24,14 @@ object Commenter {
 
         val resultText = parsedDeclarationDetails.resultText
         val indent = parsedDeclarationDetails.indent
-        val annotation = parsedDeclarationDetails.annotation
+        val annotationAndDeclaration = parsedDeclarationDetails.annotationAndDeclaration
         val lineBreak = parsedDeclarationDetails.lineBreak
-        val propertyDeclaration = parsedDeclarationDetails.propertyDeclaration
 
         val newResultText = StringBuilder()
 
         result
             .onSuccess { (_, updates) ->
+                // append updates to comments.
                 newResultText
                     .append("$indent// $COMMENT_AVAILABLE_VERSION$lineBreak")
                     .apply {
@@ -50,16 +50,15 @@ object Commenter {
                     .append("$indent// $it$lineBreak")
             }
 
-        // append original annotation nd declaration
+        // append original annotation and declaration
         newResultText
-            .append("$indent$annotation$lineBreak")
-            .append("$indent$propertyDeclaration")
+            .append(annotationAndDeclaration)
 
         newFileContent = newFileContent.replace(resultText, newResultText.toString())
 
         return newFileContent
     }
 
-    const val COMMENT_AVAILABLE_VERSION = "Available versions:"
-    const val COMMENT_ERROR = "Error:"
+    private const val COMMENT_AVAILABLE_VERSION = "Available versions:"
+    private const val COMMENT_ERROR = "Error:"
 }

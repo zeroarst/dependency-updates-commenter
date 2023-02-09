@@ -58,7 +58,7 @@ object DependenciesCRLF {
 
                 // test with commented out annotation
                 // example of using other dependency variable.
-                // @CheckNewVersions
+                // @CommentUpdates
                 const val animation = "androidx.compose.animation:animation:$version"
             }
         }

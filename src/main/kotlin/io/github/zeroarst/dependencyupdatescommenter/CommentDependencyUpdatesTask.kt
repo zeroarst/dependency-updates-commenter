@@ -3,7 +3,6 @@ package io.github.zeroarst.dependencyupdatescommenter
 import io.github.zeroarst.dependencyupdatescommenter.constants.Order
 import io.github.zeroarst.dependencyupdatescommenter.extensions.srcDirs
 import io.github.zeroarst.dependencyupdatescommenter.executers.Conductor
-import io.github.zeroarst.dependencyupdatescommenter.executers.RegexConfig
 import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
@@ -104,7 +103,6 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
                 )
             }"
         )
-        logger.debug(RegexConfig.constituted.toString())
 
         runBlocking {
             Conductor.scanFilesAndProcess(
@@ -136,7 +134,7 @@ abstract class CommentDependencyUpdatesTask : DefaultTask() {
         // find first existing src dir from candidate src dirs.
         val existingSrc = candidateSrcs.let {
             it.firstOrNull { file -> file.exists() }
-                ?: error("File/dir does not exist. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source directory.")
+                ?: error("File/dir does not exist. Checked paths:\n${it.joinToString("\n")}\nYou can configure \"scanPath\" to your source file/dir.")
         }
         logger.debug("Found existing file/dir: $existingSrc")
         return existingSrc

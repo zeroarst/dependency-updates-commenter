@@ -20,7 +20,7 @@ object Resolver {
     fun resolve(parsedContentDetails: ParsedContentDetails): Pair<ParsedContentDetails, Result<ResolvedDependencyDetails>> {
 
         val coordinate: String = parsedContentDetails.annotationCoordinate.ifBlank {
-            parsedContentDetails.propertyValue
+            parsedContentDetails.coordinate
         }
 
         logger.debug("resolving dependency. coordinate: $coordinate")

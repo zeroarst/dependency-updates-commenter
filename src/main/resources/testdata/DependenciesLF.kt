@@ -46,7 +46,7 @@ object DependenciesLF {
         // 1.7.3
         // 1.7.2
         // 1.7.1
-        // @CheckNewVersions
+        // @CommentUpdates
         const val coreKtx = "androidx.core:core-ktx:1.7.2"
 
         // test nested dependencies
@@ -58,7 +58,7 @@ object DependenciesLF {
 
                 // test with commented out annotation
                 // example of using other dependency variable.
-                // @CheckNewVersions
+                // @CommentUpdates
                 const val animation = "androidx.compose.animation:animation:$version"
             }
         }

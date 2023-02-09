@@ -28,7 +28,7 @@ class ParserTest {
         results[0].let {
             assertEquals("@$ANNOTATION_NAME", it.annotation)
             assertEquals("const val junit = \"junit:junit:4.12\"", it.propertyDeclaration)
-            assertEquals("junit:junit:4.12", it.propertyValue)
+            assertEquals("junit:junit:4.12", it.coordinate)
         }
     }
 }

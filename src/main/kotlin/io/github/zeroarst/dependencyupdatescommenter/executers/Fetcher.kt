@@ -3,6 +3,7 @@ package io.github.zeroarst.dependencyupdatescommenter.executers
 import io.github.zeroarst.dependencyupdatescommenter.models.ComparableVersion
 import io.github.zeroarst.dependencyupdatescommenter.repositories.CentralMavenRepository
 import io.github.zeroarst.dependencyupdatescommenter.repositories.GoogleRepository
+import io.github.zeroarst.dependencyupdatescommenter.repositories.GradlePluginPortalRepository
 import io.github.zeroarst.dependencyupdatescommenter.utils.getDucLogger
 
 data class DependencyUpdate(
@@ -18,7 +19,9 @@ object Fetcher {
 
     private val repositories = listOf(
         CentralMavenRepository,
-        GoogleRepository
+        GoogleRepository,
+        // might not need it.
+        // GradlePluginPortalRepository,
     )
 
     /**

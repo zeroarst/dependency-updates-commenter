@@ -83,7 +83,7 @@ class TaskTest {
             for ((k, beforePCD) in beforePCDList.withIndex()) {
                 val afterPCD = afterPCDList[k]
                 assertEquals(beforePCD.annotation, afterPCD.annotation)
-                assertEquals(beforePCD.propertyValue, afterPCD.propertyValue)
+                assertEquals(beforePCD.coordinate, afterPCD.coordinate)
                 assertEquals(beforePCD.indent, afterPCD.indent)
                 assertEquals(beforePCD.propertyDeclaration, afterPCD.propertyDeclaration)
                 if (dirLevel == 0 || dirLevel > 1 && extension.scanSubDirectories)
