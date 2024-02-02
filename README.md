@@ -82,7 +82,7 @@ pluginManagement {
 Kotlin DSL
 ```kotlin
 plugins {
-    id("io.github.zeroarst.dependency-updates-commenter") version "0.2.0"
+    id("io.github.zeroarst.dependency-updates-commenter") version "0.2.4"
 }
 ```
 
@@ -90,7 +90,7 @@ Groovy
 
 ```groovy
 plugins {
-    id 'io.github.zeroarst.dependency-updates-commenter' version '0.2.0'
+    id 'io.github.zeroarst.dependency-updates-commenter' version '0.2.4'
 }
 ```
 
