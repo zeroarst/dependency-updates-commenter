@@ -1,3 +1,5 @@
+<img alt="Gradle Plugin Portal" src="https://img.shields.io/gradle-plugin-portal/v/io.github.zeroarst.dependency-updates-commenter?color=%2355FF55&label=latest%20version&style=plastic">
+
 # What is this?
 
 This gradle plugin helps developers, who organise dependencies with Kotlin files in a central place such as `buildSrc`
